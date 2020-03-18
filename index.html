@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSC 346 Midterm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <select name=States onchange='OnChange(this.value, this.id);'>
+        <option disabled selected value> -- select an option -- </option>
+        <option value="AL">Alabama</option>
+        <option value="AK">Alaska</option>
+        <option value="AZ">Arizona</option>
+        <option value="AR">Arkansas</option>
+        <option value="CA">California</option>
+        <option value="CO">Colorado</option>
+        <option value="CT">Connecticut</option>
+        <option value="DE">Delaware</option>
+        <option value="FL">Florida</option>
+        <option value="GA">Georgia</option>
+        <option value="HI">Hawaii</option>
+        <option value="ID">Idaho</option>
+        <option value="IL">Illinois</option>
+        <option value="IN">Indiana</option>
+        <option value="IA">Iowa</option>
+        <option value="KS">Kansas</option>
+        <option value="KY">Kentucky</option>
+        <option value="LA">Louisiana</option>
+        <option value="ME">Maine</option>
+        <option value="MD">Maryland</option>
+        <option value="MA">Massachusetts</option>
+        <option value="MI">Michigan</option>
+        <option value="MN">Minnesota</option>
+        <option value="MS">Mississippi</option>
+        <option value="MO">Missouri</option>
+        <option value="MT">Montana</option>
+        <option value="NE">Nebraska</option>
+        <option value="NV">Nevada</option>
+        <option value="NH">New Hampshire</option>
+        <option value="NJ">New Jersey</option>
+        <option value="NM ">New Mexico</option>
+        <option value="NY">New York</option>
+        <option value="NC">North Carolina</option>
+        <option value="ND">North Dakota</option>
+        <option value="OH">Ohio</option>
+        <option value="OK">Oklahoma</option>
+        <option value="OR">Oregon</option>
+        <option value="PA">Pennsylvania</option>
+        <option value="RI">Rhode Island</option>
+        <option value="SC">South Carolina</option>
+        <option value="SD">South Dakota</option>
+        <option value="TN">Tennessee</option>
+        <option value="TX">Texas</option>
+        <option value="UT">Utah</option>
+        <option value="VT">Vermont</option>
+        <option value="VA">Virginia</option>
+        <option value="WA">Washington</option>
+        <option value="WV">West Virginia</option>
+        <option value="WI">Wisconsin</option>
+        <option value="WY">Wyoming</option>
+    </select>
+    <select id="locality-dropdown" name="locality" onchange='GetWeather(this.value, this.text);'>
+    </select>
+    <p><div id = temp></div></p>
+    <p><div id = descript></div></p>
+    <p><div id = speed></div></p>
+    <p><div id = direct></div></p>
+    <p><div id = named></div></p>
+    <script>
+        function OnChange(State){
+           
+            let dropdown = document.getElementById('locality-dropdown');
+            dropdown.length = 0;
+            let placeholder = document.createElement('option');
+            placeholder.text = 'Choose City';
+            dropdown.add(placeholder);
+            dropdown.selectedIndex = 0;
+            
+            fetch("cities/"+State+".json")
+            .then(
+                function(response) {  
+                    if (response.status !== 200) {  
+                        console.warn('You ran into an issue. Status Code: ' + 
+                        response.status);
+                        return;
+                    }
+                    response.json().then(function(data) {  
+                        let option;
+                        for (let i = 0; i < data.length; i++) {
+                            option = document.createElement('option');
+                            option.label = data[i].city;
+                            option.value =""+data[i].lat+"&lon="+data[i].long+"";
+                            option.id = State;
+                            dropdown.add(option);
+                        }    
+                    });  
+                }  
+                )
+                .catch(function(err) {  
+                    console.error('Error -', err);  
+                });
+            }
+        function GetWeather(lat, long){
+            var k;
+            var mph; 
+            var ms;
+            var degrees;
+            var di;
+            var n
+            url = "https://cors-anywhere.herokuapp.com/https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&appid=8faa025cd38ee7a66fa00754024dad28";
+            fetch(url)
+            .then(
+                function(response){
+                    response.json().then(function(data) {
+                         k= data.main.temp;
+                         f= ((k-273.15)*1.8)+32;
+                         temp.innerHTML = "Temperature in Fahrenheit: "+f;
+                         descript.innerHTML = "We are currently experiencing "+ data.weather[0].description;
+                         ms = data.wind.speed;
+                         mph = (ms * 2.237);
+                         speed.innerHTML = "Current wind speeds in MPH: " + mph;
+                         degrees = data.wind.deg;
+                         if (degrees < 0 ){
+                             degrees = 360 + degrees;
+                         }
+                         if(degrees < 22.5){
+                             di = "N";
+                         }
+                         else if((degrees >= 22.5)&&(degrees < 45)){
+                             di = "NNE"
+                         }
+                         else if((degrees >= 45)&&(degrees < 67.5)){
+                             di = "NE"
+                         }
+                         else if((degrees >= 67.5)&&(degrees < 90)){
+                             di = "ENE"
+                         }
+                         else if((degrees >= 90)&&(degrees < 112.5)){
+                             di = "E"
+                         }
+                         else if((degrees >= 112.5)&&(degrees < 135)){
+                             di = "ESE"
+                         }
+                         else if((degrees >= 135)&&(degrees < 157.5)){
+                             di = "SE"
+                         }
+                         else if((degrees >= 157.5)&&(degrees < 180)){
+                             di = "SSE"
+                         }
+                         else if((degrees >= 180)&&(degrees < 202.5)){
+                             di = "S"
+                         }
+                         else if((degrees >= 202.5)&&(degrees < 225)){
+                             di = "SSW"
+                         }
+                         else if((degrees >= 225)&&(degrees < 247.5)){
+                             di = "SW"
+                         }
+                         else if((degrees >= 247.5)&&(degrees < 270)){
+                             di = "WSW"
+                         }
+                         else if((degrees >= 270)&&(degrees < 292.5)){
+                             di = "W"
+                         }
+                         else if((degrees >= 292.5)&&(degrees < 315)){
+                             di = "WNW"
+                         }
+                         else if((degrees >= 315)&&(degrees < 337.5)){
+                             di = "NNW"
+                         }
+                         else{
+                             di= "N"
+                         }
+                         direct.innerHTML = "Wind Direction: "+di;
+                         
+                         n= data.name;
+                         named.innerHTML = "City Name: " +n;
+
+                    });
+                });
+            }
+        </script>
+</body>
+</html>
